@@ -1,0 +1,22 @@
+replicaCount: 2
+
+image:
+  repository: ""   # filled in by CI
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8002
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "250m"
+    memory: "256Mi"
+
+env:
+  DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/itemsdb"
+  USERS_SERVICE_URL: "http://users:8001"

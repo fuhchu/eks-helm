@@ -1,0 +1,17 @@
+# Override sub-chart values here.
+# Keys must match the dependency name exactly.
+
+api-gateway:
+  image:
+    repository: ""
+    tag: "latest"
+
+users:
+  image:
+    repository: ""
+    tag: "latest"
+
+items:
+  image:
+    repository: ""
+    tag: "latest"

@@ -1,0 +1,16 @@
+apiVersion: v2
+name: eks-app
+description: Umbrella chart — installs all three eks-helm microservices
+type: application
+version: 0.1.0
+
+dependencies:
+  - name: api-gateway
+    version: "0.1.0"
+    repository: "file://../api-gateway"
+  - name: users
+    version: "0.1.0"
+    repository: "file://../users"
+  - name: items
+    version: "0.1.0"
+    repository: "file://../items"
