@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init
+data:
+  # Postgres official image runs all .sh scripts in /docker-entrypoint-initdb.d on first boot.
+  # This creates each database listed in values.yaml.
+  create-databases.sh: |
+    #!/bin/bash
+    set -e
+    for db in $(echo $POSTGRES_MULTIPLE_DATABASES | tr ',' ' '); do
+      echo "Creating database: $db"
+      psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
+        CREATE DATABASE $db;
+      EOSQL
+    done

@@ -1,0 +1,17 @@
+image: postgres:16-alpine
+
+storage:
+  size: 5Gi
+  # EKS uses the gp2 StorageClass by default (EBS volumes).
+  # gp2 is single-AZ — the PVC will only mount on a node in the same AZ.
+  # If the pod reschedules to the other AZ, it stays Pending until moved back.
+  # In prod you'd use a distributed DB or RDS instead.
+  storageClassName: gp2
+
+databases:
+  - usersdb
+  - itemsdb
+
+credentials:
+  user: postgres
+  password: postgres
