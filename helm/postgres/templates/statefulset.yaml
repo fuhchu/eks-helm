@@ -37,6 +37,10 @@ spec:
               command: ["pg_isready", "-U", {{ .Values.credentials.user | quote }}]
             initialDelaySeconds: 5
             periodSeconds: 5
+      volumes:
+        - name: init-scripts
+          configMap:
+            name: postgres-init
   volumeClaimTemplates:
     - metadata:
         name: data
@@ -46,7 +50,3 @@ spec:
         resources:
           requests:
             storage: {{ .Values.storage.size }}
-  volumes:
-    - name: init-scripts
-      configMap:
-        name: postgres-init

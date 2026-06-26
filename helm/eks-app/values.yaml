@@ -3,15 +3,15 @@
 
 api-gateway:
   image:
-    repository: ""
-    tag: "latest"
+    repository: "445481011516.dkr.ecr.us-west-2.amazonaws.com/eks-helm-api-gateway"
+    tag: "v1"
 
 users:
   image:
-    repository: ""
-    tag: "latest"
+    repository: "445481011516.dkr.ecr.us-west-2.amazonaws.com/eks-helm-users"
+    tag: "v1"
 
 items:
   image:
-    repository: ""
-    tag: "latest"
+    repository: "445481011516.dkr.ecr.us-west-2.amazonaws.com/eks-helm-items"
+    tag: "v1"
