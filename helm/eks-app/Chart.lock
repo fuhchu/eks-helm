@@ -1,0 +1,15 @@
+dependencies:
+- name: postgres
+  repository: file://../postgres
+  version: 0.1.0
+- name: api-gateway
+  repository: file://../api-gateway
+  version: 0.1.0
+- name: users
+  repository: file://../users
+  version: 0.1.0
+- name: items
+  repository: file://../items
+  version: 0.1.0
+digest: sha256:c1c1ff0e765535ba8aaf277757367aaa3842aded75f026c262c5be8762053d1b
+generated: "2026-06-25T21:37:48.351067-06:00"

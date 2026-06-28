@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: postgres-init-db
+  annotations:
+    # Helm hook: runs after all resources in this release are deployed.
+    # "hook-succeeded" deletes the Job pod once it completes successfully,
+    # keeping the namespace clean.
+    "helm.sh/hook": post-install
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  # Retry up to 10 times — Postgres may not be ready immediately
+  backoffLimit: 10
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: init-db
+          image: postgres:16-alpine
+          env:
+            - name: PGPASSWORD
+              value: {{ .Values.credentials.password | quote }}
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              echo "Waiting for Postgres to be ready..."
+              until pg_isready -h postgres -U {{ .Values.credentials.user | quote }}; do
+                sleep 2
+              done
+              echo "Creating databases..."
+              {{- range .Values.databases }}
+              psql -h postgres -U {{ $.Values.credentials.user }} -tc "SELECT 1 FROM pg_database WHERE datname = '{{ . }}'" | grep -q 1 || \
+                psql -h postgres -U {{ $.Values.credentials.user }} -c "CREATE DATABASE {{ . }};"
+              {{- end }}
+              echo "Done."

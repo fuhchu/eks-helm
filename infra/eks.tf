@@ -82,3 +82,18 @@ resource "aws_eks_node_group" "main" {
 
   tags = { Name = "${var.project}-nodes" }
 }
+
+# ── EKS Addons ─────────────────────────────────────────────────────────────────
+# aws-ebs-csi-driver: required in EKS 1.23+ to provision EBS-backed PVCs.
+# Without this, any PVC using the gp2/gp3 StorageClass stays Pending forever.
+# The node role already has the EC2 permissions the CSI driver needs.
+
+resource "aws_eks_addon" "ebs_csi_driver" {
+  cluster_name             = aws_eks_cluster.main.name
+  addon_name               = "aws-ebs-csi-driver"
+  service_account_role_arn = aws_iam_role.ebs_csi_driver.arn
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
+
+  depends_on = [aws_eks_node_group.main]
+}
