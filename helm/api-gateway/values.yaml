@@ -20,3 +20,7 @@ resources:
 env:
   USERS_SERVICE_URL: "http://users:8001"
   ITEMS_SERVICE_URL: "http://items:8002"
+
+ingress:
+  host: "eks-helm.fuhchu.org"
+  certificateArn: "arn:aws:acm:us-west-2:445481011516:certificate/12451628-6977-4960-beb1-7ff3598d9208"

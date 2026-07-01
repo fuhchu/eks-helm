@@ -17,6 +17,19 @@ spec:
         app: items
         release: {{ .Release.Name }}
     spec:
+      initContainers:
+        - name: create-db
+          image: postgres:16-alpine
+          env:
+            - name: PGPASSWORD
+              value: postgres
+          command:
+            - sh
+            - -c
+            - |
+              until pg_isready -h postgres -U postgres; do sleep 2; done
+              psql -h postgres -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'itemsdb'" | grep -q 1 || \
+                psql -h postgres -U postgres -c "CREATE DATABASE itemsdb;"
       containers:
         - name: items
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
