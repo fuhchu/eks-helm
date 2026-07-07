@@ -19,8 +19,6 @@ resources:
 
 env:
   USERS_SERVICE_URL: "http://users:8001"
-  # DATABASE_URL now comes from the items-db-credentials Secret (see
-  # templates/secret.yaml), not from plaintext values here.
-
-global:
-  postgresPassword: ""   # must be supplied via --set global.postgresPassword=...
+  # DATABASE_URL comes from the items-db-credentials Secret, which External
+  # Secrets Operator materializes from AWS Secrets Manager. See
+  # templates/externalsecret.yaml.
