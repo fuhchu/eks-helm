@@ -18,6 +18,20 @@ resource "aws_eks_cluster" "main" {
     endpoint_private_access = true
   }
 
+  # API_AND_CONFIG_MAP: supports both the new Access Entry API (used for
+  # github_actions in rbac.tf) and the legacy aws-auth ConfigMap (used
+  # implicitly for the node role that EKS wires up automatically).
+  # API-only would be cleaner but risks breaking the existing node group
+  # mapping that was created under the old CONFIG_MAP-only mode.
+  access_config {
+    authentication_mode = "API_AND_CONFIG_MAP"
+    # Must match the value AWS set implicitly when the cluster was first
+    # created (true). Terraform treats this as immutable — leaving it
+    # unset defaults to null, which is a DIFFERENT value than the
+    # cluster's actual current state, forcing a destroy+recreate.
+    bootstrap_cluster_creator_admin_permissions = true
+  }
+
   depends_on = [
     aws_iam_role_policy_attachment.eks_cluster_policy,
   ]

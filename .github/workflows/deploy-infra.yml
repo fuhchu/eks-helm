@@ -1,0 +1,98 @@
+name: Deploy infra
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "infra/**"
+
+env:
+  AWS_REGION: us-west-2
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::445481011516:role/eks-helm-github-actions
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform init
+        working-directory: infra
+        run: terraform init
+
+      - name: Terraform plan
+        working-directory: infra
+        # -detailed-exitcode: 0 = no changes, 1 = error, 2 = changes present.
+        # We surface this so the job visibly reports which case occurred
+        # instead of always showing green.
+        run: |
+          set +e
+          terraform plan -detailed-exitcode -out=tfplan
+          exit_code=$?
+          set -e
+          if [ $exit_code -eq 1 ]; then
+            echo "::error::terraform plan failed"
+            exit 1
+          elif [ $exit_code -eq 2 ]; then
+            echo "Plan has changes — review output above before approving apply"
+          else
+            echo "Plan has no changes"
+          fi
+
+      - name: Upload plan artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: infra/tfplan
+          retention-days: 1
+
+  apply:
+    needs: plan
+    runs-on: ubuntu-latest
+    # This environment must be created in GitHub repo Settings > Environments
+    # with "Required reviewers" turned on. That's what makes this a manual
+    # approval gate — the job pauses here until someone approves it in the UI.
+    environment: production
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::445481011516:role/eks-helm-github-actions
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform init
+        working-directory: infra
+        run: terraform init
+
+      - name: Download plan artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan
+          path: infra
+
+      - name: Terraform apply
+        working-directory: infra
+        run: terraform apply -auto-approve tfplan
