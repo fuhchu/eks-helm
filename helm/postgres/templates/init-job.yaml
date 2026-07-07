@@ -19,7 +19,10 @@ spec:
           image: postgres:16-alpine
           env:
             - name: PGPASSWORD
-              value: {{ .Values.credentials.password | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: POSTGRES_PASSWORD
           command:
             - sh
             - -c

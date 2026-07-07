@@ -18,5 +18,9 @@ resources:
     memory: "256Mi"
 
 env:
-  DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/itemsdb"
   USERS_SERVICE_URL: "http://users:8001"
+  # DATABASE_URL now comes from the items-db-credentials Secret (see
+  # templates/secret.yaml), not from plaintext values here.
+
+global:
+  postgresPassword: ""   # must be supplied via --set global.postgresPassword=...

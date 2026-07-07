@@ -14,4 +14,10 @@ databases:
 
 credentials:
   user: postgres
-  password: postgres
+  # password intentionally has no default — it must be supplied at install/
+  # upgrade time via --set global.postgresPassword=... (or a CI secret),
+  # never committed to values.yaml / git.
+
+global:
+  postgresPassword: ""   # must be supplied via --set global.postgresPassword=...
+

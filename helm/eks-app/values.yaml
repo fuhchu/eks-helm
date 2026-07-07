@@ -1,6 +1,11 @@
 # Override sub-chart values here.
 # Keys must match the dependency name exactly.
 
+# global.postgresPassword is intentionally NOT set here — it must be passed
+# at install/upgrade time via --set global.postgresPassword=..., so the
+# password never appears in a file committed to git.
+
+
 api-gateway:
   image:
     repository: "445481011516.dkr.ecr.us-west-2.amazonaws.com/eks-helm-api-gateway"

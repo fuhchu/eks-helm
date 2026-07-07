@@ -22,9 +22,15 @@ spec:
             - containerPort: 5432
           env:
             - name: POSTGRES_USER
-              value: {{ .Values.credentials.user | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: POSTGRES_USER
             - name: POSTGRES_PASSWORD
-              value: {{ .Values.credentials.password | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: POSTGRES_PASSWORD
             - name: POSTGRES_MULTIPLE_DATABASES
               value: {{ join "," .Values.databases | quote }}
             - name: PGDATA
