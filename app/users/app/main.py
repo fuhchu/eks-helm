@@ -50,7 +50,7 @@ def get_db():
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "service": "users"}
+    return {"status": "ok", "service": "users", "version": "1.1.0"}
 
 
 @app.post("/users", response_model=UserResponse, status_code=201)
